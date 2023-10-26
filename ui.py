@@ -11,10 +11,14 @@ import zipfile
 import csv
 #Импорты внутренних скриптов
 from detectors import load_detector_model, detect
+from utils import get_files_in_directory
 
 
 def main():
-    st.sidebar.header('Ввод')
+    selector_option = st.sidebar.selectbox("Выберите модель детекции", options=[1,2,3]) #Она выбирается в мейне ЫЛЬЯ!
+    st.sidebar.header('Ввод') 
+    st.text(body=selector_option) #Она выбирается в мейне ЫЛЬЯ!
+    selected_model = load_detector_model(selector_option) #Она выбирается в мейне ЫЛЬЯ!
     st.title('Вывод')
     load_camera()
         
@@ -42,13 +46,11 @@ def load_img(img_file):
     st.image(img)
     image = Image.open(BytesIO(img))
     image = np.asarray(image)
-    model = load_detector_model("YOLOv8")
-    image, results = detect("YOLOv8", model, image)
+    image, results = detect("YOLOv8", selected_model, image)
     st.image(image)
     st.text(results)
 
 def load_zip(zip_file):
-    model = load_detector_model("YOLOv8")
     results_list = []
 
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -57,7 +59,7 @@ def load_zip(zip_file):
         
         for filename in os.listdir(temp_dir):
             file_path = os.path.join(temp_dir, filename)
-            image, result = detect("YOLOv8",model,file_path)
+            image, result = detect("YOLOv8",selected_model,file_path)
             results_list.append(result)
 
     with open('results.csv', 'a', newline='') as csvfile:
@@ -67,8 +69,6 @@ def load_zip(zip_file):
 def load_video(video_file):
     tfile = tempfile.NamedTemporaryFile(delete=False) 
     tfile.write(video_file.read())
-
-    model = load_detector_model("YOLOv8")
     video_capture = cv2.VideoCapture(tfile.name)
     FRAME_WINDOW = st.image([])
 
@@ -77,13 +77,12 @@ def load_video(video_file):
         if not ret:
             break 
         
-        processed_frame, results = detect("YOLOv8", model, frame)
+        processed_frame, results = detect("YOLOv8", selected_model, frame)
         FRAME_WINDOW.image(processed_frame)
     
 def load_camera():
     run = st.sidebar.checkbox('Run')
-    if run:
-      model = load_detector_model("YOLOv5")
+    if run:    
       FRAME_WINDOW = st.image([])
       RESULTS_WIDNOW = st.image([])
       camera = cv2.VideoCapture(0)
@@ -91,7 +90,7 @@ def load_camera():
       while run:
           _, frame = camera.read()
           frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-          image, results = detect("YOLOv5", model, frame)
+          image, results = detect("YOLOv8", selected_model, frame)
           FRAME_WINDOW.image(frame)
           RESULTS_WIDNOW.image(image)
 
@@ -101,4 +100,5 @@ def load_camera():
 
 
 if __name__ == '__main__':
-	main()
+    selected_model = None #Она выбирается в мейне ЫЛЬЯ!
+    main()
