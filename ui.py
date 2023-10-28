@@ -14,15 +14,15 @@ from utils import get_files_in_directory
 
 
 def main():
-    yolov8_model_paths, yolov8_model_names = get_files_in_directory("models/YOLOv8")
-    selector_option = st.sidebar.selectbox("Выберите модель детекции", options=yolov8_model_names) #Она выбирается в мейне ЫЛЬЯ!
+    selector_option = st.sidebar.selectbox("Выберите модель детекции", options=["YOLOv5","YOLOv8n_GC","YOLOv8n_thesis","YOLOv8s"]) #Она выбирается в мейне ЫЛЬЯ!
     st.sidebar.header('Ввод') 
     st.text(body=selector_option) #Она выбирается в мейне ЫЛЬЯ!
-    selected_model = load_detector_model(yolov8_model_paths[yolov8_model_names.index(selector_option)]) #Она выбирается в мейне ЫЛЬЯ!
-    
+    selected_model = load_detector_model(selector_option) #Она выбирается в мейне ЫЛЬЯ!
     print(selected_model)
     st.title('Вывод')
   
+    
+
     def load():
         load_type = ['jpg','png','jpeg','zip','rar','mkv','mp4','mpg','mpeg','mpeg4']
         uploaded_data= st.sidebar.file_uploader(label="Выберете файл для распознования",type = load_type)
@@ -44,7 +44,8 @@ def main():
         img = img_file.getvalue()
         st.image(img)
         image = Image.open(BytesIO(img))
-        image, results = detect(selected_model, image)
+        #image = np.asarray(image)
+        image, results = detect(selector_option, selected_model, image)
         st.image(image)
         st.text(results)
 
@@ -70,11 +71,10 @@ def main():
 
         while True:
             ret, frame = video_capture.read()
-            frame = Image.fromarray(frame[..., ::-1])
             if not ret:
                 break 
             
-            processed_frame, results = detect(selected_model, frame)
+            processed_frame, results = detect(selector_option, selected_model, frame)
             FRAME_WINDOW.image(processed_frame)
     
     def load_camera():
@@ -86,15 +86,15 @@ def main():
 
         while run:
             _, frame = camera.read()
-            frame = Image.fromarray(frame[..., ::-1])
-            image, results = detect(selected_model, frame)
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image, results = detect(selector_option, selected_model, frame)
             FRAME_WINDOW.image(frame)
             RESULTS_WIDNOW.image(image)
 
         else:
             st.write('Stopped')
     
-    load_camera() 
+    #load_camera() 
     load()
     
 
