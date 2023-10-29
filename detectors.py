@@ -49,6 +49,6 @@ def ensemble_detect(models_pack, image, time = None, type = "png"):
         for key, counts in most_common_values.items():
             most_common = max(counts, key=counts.get)
             output_list.append(most_common)
-        image_with_boxes = detect(models_pack[0], image)
+        image_with_boxes = detect(models_pack[1], image)
         
         return image_with_boxes, output_list

@@ -113,10 +113,10 @@ def main(models):
     load()
     
 print("loading_models")
-model1 = YOLO("models/YOLOv8/yolov8_combined_pre_s.pt")
-model2 = YOLO("models/YOLOv8/yolov8_combined_pre_s.pt")
-model3 = YOLO("models/YOLOv8/yolov8_combined_s.pt")
-models = [model1, model2, model3]
+model1 = YOLO("models/YOLOv8/Model_type1.pt")
+model2 = YOLO("models/YOLOv8/Model_type2.pt")
+model3 = YOLO("models/YOLOv8/Model_type3.pt")
+models_RGB = [model1, model2, model3]
 
 if __name__ == '__main__':
-    main(models)
+    main(models_RGB)
