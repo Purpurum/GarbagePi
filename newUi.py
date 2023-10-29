@@ -16,11 +16,11 @@ from res.style import page_style
 
 
 def main(models):
-    
+    #Загрузка стилей
     page_style()
-    
+    # Установка заголовка
     st.title('Garbage detection by Ping')
-    
+    #Функция загрузки файла
     def load():
         load_type = ['jpg','png','jpeg','mkv','mp4','mpg','mpeg','mpeg4','tif','tiff']
         uploaded_data = st.file_uploader(label="Выберите файл для распознавания",type=load_type)
@@ -33,10 +33,10 @@ def main(models):
             else:st.text("Ошибка чтения файла, возможно неподходящий формат\n(убедитесь что в названии файла нет точек и специальных символов)")          
         else:
             return None
-    
+    #Функция для получения расширения файла
     def get_file_type(file):
         return os.path.splitext(file)[1][1:]
-    
+    #Функция загрузки и детекта картинки РГБ
     def load_img(img_file):
         img = img_file.getvalue()
         st.image(img)
@@ -47,7 +47,7 @@ def main(models):
         st.text(f"Стекло:{results[1]}")
         st.text(f"Пластик:{results[2]}")
         st.text(f"Металл:{results[3]}")
-    
+    #Функция загрузки и детекта картинки тифф
     def load_tif(tif_file):
         end_point = st.select_slider(
             'Выберите длину волны',
@@ -65,7 +65,7 @@ def main(models):
         st.text(f"Стекло:{results[1]}")
         st.text(f"Пластик:{results[2]}")
         st.text(f"Металл:{results[3]}")
-
+    #Функция загрузки и детекта на видео, а также подсчёт уникальных элементов
     def load_video(video_file):
         tfile = tempfile.NamedTemporaryFile(delete=False) 
         tfile.write(video_file.read())
@@ -79,7 +79,8 @@ def main(models):
                 break  
              
             counter += 1    
-            processed_frame, results = detectors.ensemble_detect(models, frame)
+            new_image = frame[...,::-1]
+            processed_frame, results = detectors.ensemble_detect(models, new_image)
             if counter % 25 == 0:   
                 res.append(results)
 
@@ -90,6 +91,7 @@ def main(models):
         st.text(f"Стекло:{sums[1]}")
         st.text(f"Пластик:{sums[2]}")
         st.text(f"Металл:{sums[3]}")
+    #Функция обработки видеопотока
     def load_camera():
         run = st.checkbox('Стрим потока с камеры')
         if run:    
@@ -98,10 +100,11 @@ def main(models):
 
         while run:
             _, frame = camera.read()
-            image, results = detectors.ensemble_detect(models, frame)
-            new_image = np.array(image.convert('RGBA'), dtype=np.uint8)
-            new_image = cv2.cvtColor(new_image, cv2.COLOR_RGBA2BGRA)
-            RESULTS_WIDNOW.image(new_image)
+            new_image = frame[...,::-1]
+            image, results = detectors.ensemble_detect(models, new_image)
+            #new_image = np.array(image.convert('RGBA'), dtype=np.uint8)
+            #new_image = cv2.cvtColor(new_image, cv2.COLOR_RGBA2BGRA)
+            RESULTS_WIDNOW.image(image)
 
         else:
             pass

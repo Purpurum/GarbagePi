@@ -5,9 +5,9 @@ def load_detector_model(model_path, model_arch = "YOLOv8"):
     if model_arch == "YOLOv8":
         model_yolov8 = YOLO(model_path)
         return model_yolov8
-
+#Функция Локального детекта
 def detect(model, image):
-    results = model(image)
+    results = model(image, verbose=False)
     im_array = results[0].plot()
     img_with_boxes = Image.fromarray(im_array[..., ::-1])
     try:
@@ -15,9 +15,12 @@ def detect(model, image):
     except:
         pass
     return img_with_boxes
-
+#Функция ансамбля
 def ensemble_detect(models_pack, image, time = None, type = "png"):
-    image = image[...,::-1]
+    try:
+        image = image[...,::-1]
+    except:
+        pass
     if type == "png":
         results_list = []
         for model in models_pack:
@@ -46,8 +49,6 @@ def ensemble_detect(models_pack, image, time = None, type = "png"):
         for key, counts in most_common_values.items():
             most_common = max(counts, key=counts.get)
             output_list.append(most_common)
-            #print(most_common, end=" ")
-        print(results_list)
         image_with_boxes = detect(models_pack[0], image)
         
         return image_with_boxes, output_list

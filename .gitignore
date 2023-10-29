@@ -2,3 +2,9 @@
 todo
 video0
 __pycache__
+dataset_worker.ipynb
+results/
+results_all/
+results.png
+ngrok.exe
+submission.csv
