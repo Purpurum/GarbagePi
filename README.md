@@ -75,6 +75,6 @@ $ python -m streamlit run newUi.py
 </p>
 
 <div align="center">
-  <img src="res/expl.gif" border="0" /></a>
+  <img src="icons/cast_cool.gif" border="0" /></a>
 </div>
 
